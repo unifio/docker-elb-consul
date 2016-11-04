@@ -1,0 +1,27 @@
+machine:
+  environment:
+    CONSUL_VERSION: 0.6.4
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - "~/docker"
+  override:
+    - docker info
+    - if [[ -e ~/docker/image.tar ]]; then docker load --input ~/docker/image.tar; fi
+    - docker build -t unifio/elb-consul .
+    - mkdir -p ~/docker
+    - docker save unifio/elb-consul > ~/docker/image.tar
+
+test:
+  override:
+    - "docker run --entrypoint /bin/sh unifio/elb-consul -c \"/bin/dumb-init /bin/gosu consul /bin/consul version\""
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker tag -f `docker images | grep -E 'unifio/elb-consul' | awk '{print $3}'` unifio/elb-consul:${CONSUL_VERSION}
+      - docker push unifio/elb-consul
