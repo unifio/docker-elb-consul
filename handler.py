@@ -9,6 +9,7 @@ from subprocess import check_output, CalledProcessError
 
 AWS_REGION = os.environ['AWS_REGION']
 ELB_NAME = os.environ['ELB_NAME']
+MAX_NODES = os.environ['MAX_NODES']
 
 ELB = boto.ec2.elb.connect_to_region(region_name=AWS_REGION)
 
@@ -69,16 +70,18 @@ def process_update():
     for update in sys.stdin:
         register = set()
         deregister = set()
+        node_count = 0
         for node in json.loads(update):
             ip = node['Node']['Address']
             instance_id = get_instance_id(ip)
             if not instance_id:
                 continue
             ok = all([check['Status'] == 'passing' for check in node['Checks']])
-            if ok:
+            if ok and MAX_NODES == '-1' or node_count < int(MAX_NODES):
                 register.add(instance_id)
             else:
                 deregister.add(instance_id)
+            node_count += 1
         update_elb(register, deregister)
             
 if __name__ == "__main__":
