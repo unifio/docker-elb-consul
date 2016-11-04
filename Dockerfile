@@ -11,4 +11,6 @@ RUN apk --no-cache --upgrade add ca-certificates curl groff less python py-pip &
 COPY handler.py /usr/local/bin/handler.py
 COPY start /usr/local/bin/start
 
+ENV MAX_NODES=-1
+
 ENTRYPOINT ["/usr/local/bin/start"]
