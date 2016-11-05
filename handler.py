@@ -85,9 +85,4 @@ def process_update():
         update_elb(register, deregister)
             
 if __name__ == "__main__":
-    try:
-        check_output('aws iam get-user', shell=True)
-    except CalledProcessError as e:
-        print "Check your AWS credentials: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY"
-        sys.exit(1)
     process_update()
