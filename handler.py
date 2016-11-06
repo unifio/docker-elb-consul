@@ -70,18 +70,18 @@ def process_update():
     for update in sys.stdin:
         register = set()
         deregister = set()
-        node_count = 0
+        healthy_node_count = 0
         for node in json.loads(update):
             ip = node['Node']['Address']
             instance_id = get_instance_id(ip)
             if not instance_id:
                 continue
             ok = all([check['Status'] == 'passing' for check in node['Checks']])
-            if ok and MAX_NODES == '-1' or node_count < int(MAX_NODES):
+            if ok and (MAX_NODES == '-1' or healthy_node_count < int(MAX_NODES)):
                 register.add(instance_id)
+                healthy_node_count += 1
             else:
                 deregister.add(instance_id)
-            node_count += 1
         update_elb(register, deregister)
             
 if __name__ == "__main__":
