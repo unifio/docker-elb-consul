@@ -1,6 +1,6 @@
 machine:
   environment:
-    CONSUL_VERSION: 0.7.0
+    CONSUL_VERSION: 0.7.1
   services:
     - docker
 
