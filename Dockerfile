@@ -1,4 +1,4 @@
-FROM unifio/consul:0.6.4
+FROM unifio/consul:0.7.0
 MAINTAINER Unif.io, Inc. <support@unif.io>
 
 RUN apk --no-cache --upgrade add ca-certificates curl groff less python py-pip && \
